@@ -18,16 +18,6 @@ const { executeLocally, executeGitHubAction } = __webpack_require__(8947);
 
 const pkg = __webpack_require__(306);
 
-const OLD_CONFIG = [
-  "MERGE_LABEL",
-  "UPDATE_LABEL",
-  "LABELS",
-  "AUTOMERGE",
-  "AUTOREBASE",
-  "COMMIT_MESSAGE_TEMPLATE",
-  "TOKEN"
-];
-
 async function main() {
   const parser = new ArgumentParser({
     prog: pkg.name,
@@ -61,8 +51,6 @@ async function main() {
     logger.level = "debug";
   }
 
-  checkOldConfig();
-
   const token = env("GITHUB_TOKEN");
 
   const octokit = new Octokit({
@@ -88,25 +76,6 @@ async function main() {
   }
 }
 
-function checkOldConfig() {
-  let error = false;
-  for (const old of OLD_CONFIG) {
-    if (process.env[old] != null) {
-      logger.error("Old configuration option present:", old);
-      error = true;
-    }
-  }
-  if (error) {
-    logger.error(
-      "You have passed configuration options that were used by an old " +
-        "version of this action. Please see " +
-        "https://github.com/pascalgn/automerge-action for the latest " +
-        "documentation of the configuration options!"
-    );
-    throw new Error(`old configuration present!`);
-  }
-}
-
 function env(name) {
   const val = process.env[name];
   if (!val || !val.length) {
@@ -116,13 +85,13 @@ function env(name) {
 }
 
 if (require.main === require.cache[eval('__filename')]) {
-  main().catch(e => {
-    if (e instanceof ClientError) {
+  main().catch(error => {
+    if (error instanceof ClientError) {
       process.exitCode = 2;
-      logger.error(e);
+      logger.error(error);
     } else {
       process.exitCode = 1;
-      logger.error(e);
+      logger.error(error);
     }
   });
 }
@@ -1749,7 +1718,7 @@ exports.Octokit = Octokit;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 
-var isPlainObject = __webpack_require__(558);
+var isPlainObject = __webpack_require__(3287);
 var universalUserAgent = __webpack_require__(5030);
 
 function lowercaseKeys(object) {
@@ -2135,52 +2104,6 @@ const endpoint = withDefaults(null, DEFAULTS);
 
 exports.endpoint = endpoint;
 //# sourceMappingURL=index.js.map
-
-
-/***/ }),
-
-/***/ 558:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-
-/*!
- * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
- *
- * Copyright (c) 2014-2017, Jon Schlinkert.
- * Released under the MIT License.
- */
-
-function isObject(o) {
-  return Object.prototype.toString.call(o) === '[object Object]';
-}
-
-function isPlainObject(o) {
-  var ctor,prot;
-
-  if (isObject(o) === false) return false;
-
-  // If has modified constructor
-  ctor = o.constructor;
-  if (ctor === undefined) return true;
-
-  // If has modified prototype
-  prot = ctor.prototype;
-  if (isObject(prot) === false) return false;
-
-  // If constructor does not have an Object-specific method
-  if (prot.hasOwnProperty('isPrototypeOf') === false) {
-    return false;
-  }
-
-  // Most likely a plain Object
-  return true;
-}
-
-exports.isPlainObject = isPlainObject;
 
 
 /***/ }),
@@ -3695,7 +3618,7 @@ function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'defau
 
 var endpoint = __webpack_require__(9440);
 var universalUserAgent = __webpack_require__(5030);
-var isPlainObject = __webpack_require__(9062);
+var isPlainObject = __webpack_require__(3287);
 var nodeFetch = _interopDefault(__webpack_require__(467));
 var requestError = __webpack_require__(537);
 
@@ -3835,52 +3758,6 @@ const request = withDefaults(endpoint.endpoint, {
 
 exports.request = request;
 //# sourceMappingURL=index.js.map
-
-
-/***/ }),
-
-/***/ 9062:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-
-/*!
- * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
- *
- * Copyright (c) 2014-2017, Jon Schlinkert.
- * Released under the MIT License.
- */
-
-function isObject(o) {
-  return Object.prototype.toString.call(o) === '[object Object]';
-}
-
-function isPlainObject(o) {
-  var ctor,prot;
-
-  if (isObject(o) === false) return false;
-
-  // If has modified constructor
-  ctor = o.constructor;
-  if (ctor === undefined) return true;
-
-  // If has modified prototype
-  prot = ctor.prototype;
-  if (isObject(prot) === false) return false;
-
-  // If constructor does not have an Object-specific method
-  if (prot.hasOwnProperty('isPrototypeOf') === false) {
-    return false;
-  }
-
-  // Most likely a plain Object
-  return true;
-}
-
-exports.isPlainObject = isPlainObject;
 
 
 /***/ }),
@@ -13595,6 +13472,52 @@ if (typeof Object.create === 'function') {
     }
   }
 }
+
+
+/***/ }),
+
+/***/ 3287:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+
+/*!
+ * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
+ *
+ * Copyright (c) 2014-2017, Jon Schlinkert.
+ * Released under the MIT License.
+ */
+
+function isObject(o) {
+  return Object.prototype.toString.call(o) === '[object Object]';
+}
+
+function isPlainObject(o) {
+  var ctor,prot;
+
+  if (isObject(o) === false) return false;
+
+  // If has modified constructor
+  ctor = o.constructor;
+  if (ctor === undefined) return true;
+
+  // If has modified prototype
+  prot = ctor.prototype;
+  if (isObject(prot) === false) return false;
+
+  // If constructor does not have an Object-specific method
+  if (prot.hasOwnProperty('isPrototypeOf') === false) {
+    return false;
+  }
+
+  // Most likely a plain Object
+  return true;
+}
+
+exports.isPlainObject = isPlainObject;
 
 
 /***/ }),
