@@ -11,16 +11,6 @@ const { executeLocally, executeGitHubAction } = require("../lib/api");
 
 const pkg = require("../package.json");
 
-const OLD_CONFIG = [
-  "MERGE_LABEL",
-  "UPDATE_LABEL",
-  "LABELS",
-  "AUTOMERGE",
-  "AUTOREBASE",
-  "COMMIT_MESSAGE_TEMPLATE",
-  "TOKEN"
-];
-
 async function main() {
   const parser = new ArgumentParser({
     prog: pkg.name,
@@ -54,8 +44,6 @@ async function main() {
     logger.level = "debug";
   }
 
-  checkOldConfig();
-
   const token = env("GITHUB_TOKEN");
 
   const octokit = new Octokit({
@@ -81,25 +69,6 @@ async function main() {
   }
 }
 
-function checkOldConfig() {
-  let error = false;
-  for (const old of OLD_CONFIG) {
-    if (process.env[old] != null) {
-      logger.error("Old configuration option present:", old);
-      error = true;
-    }
-  }
-  if (error) {
-    logger.error(
-      "You have passed configuration options that were used by an old " +
-        "version of this action. Please see " +
-        "https://github.com/pascalgn/automerge-action for the latest " +
-        "documentation of the configuration options!"
-    );
-    throw new Error(`old configuration present!`);
-  }
-}
-
 function env(name) {
   const val = process.env[name];
   if (!val || !val.length) {
@@ -109,13 +78,13 @@ function env(name) {
 }
 
 if (require.main === module) {
-  main().catch(e => {
-    if (e instanceof ClientError) {
+  main().catch(error => {
+    if (error instanceof ClientError) {
       process.exitCode = 2;
-      logger.error(e);
+      logger.error(error);
     } else {
       process.exitCode = 1;
-      logger.error(e);
+      logger.error(error);
     }
   });
 }
